@@ -2,6 +2,11 @@
 
 import { WebSocket } from "ws";
 import { v4 as uuidv4 } from "uuid";
+import { FindUnits } from "./finder.js";
+
+console.log("searching...");
+const f = new FindUnits();
+await f.searchAsync(5000);
 
 // temp. replace with the IP of your device
 const endpoint = "10.0.0.41";
