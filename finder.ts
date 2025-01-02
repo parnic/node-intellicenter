@@ -3,6 +3,7 @@ import { Socket } from "dgram";
 import { EventEmitter } from "events";
 import { setTimeout as setTimeoutSync } from "timers";
 import os from "os";
+import { GetDNSAnswer, GetDNSQuestion } from "./dns.js";
 
 export class FindUnits extends EventEmitter {
   constructor() {
@@ -118,6 +119,56 @@ export class FindUnits extends EventEmitter {
 
   foundServer(msg: Buffer, remote: dgram.RemoteInfo) {
     // debugFind("found something");
+
+    let flags = 0;
+    if (msg.length > 4) {
+      flags = msg.readUInt16BE(2);
+      const answerBit = 1 << 15;
+      if ((flags & answerBit) === 0) {
+        // received query, don't process as answer
+        return;
+      }
+    }
+
+    let nextAnswerOffset = 12;
+
+    let questions = 0;
+    if (msg.length >= 6) {
+      questions = msg.readUInt16BE(4);
+      let nextQuestionOffset = 12;
+      for (let i = 0; i < questions; i++) {
+        const parsed = GetDNSQuestion(msg, nextQuestionOffset);
+        nextQuestionOffset = parsed.endOffset;
+      }
+
+      nextAnswerOffset = nextQuestionOffset;
+    }
+
+    let answers = 0;
+    if (msg.length >= 8) {
+      answers = msg.readUInt16BE(6);
+    }
+
+    if (answers > 0) {
+      for (let i = 0; i < answers; i++) {
+        if (msg.length <= nextAnswerOffset) {
+          console.error(
+            `while inspecting dns answers, expected message length > ${nextAnswerOffset.toString()} but it was ${msg.length.toString()}`,
+          );
+          break;
+        }
+
+        const answer = GetDNSAnswer(msg, nextAnswerOffset);
+        if (!answer) {
+          break;
+        }
+
+        nextAnswerOffset = answer.endOffset;
+        if (answer.interface === "a") {
+          console.log("a record:", answer);
+        }
+      }
+    }
 
     const str = msg.toString();
     console.log(str);
