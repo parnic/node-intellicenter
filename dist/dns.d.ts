@@ -33,7 +33,8 @@ export interface SrvRecord extends Record {
 }
 export interface ARecord extends Record {
     interface: "a";
-    address: string;
+    address: number;
+    addressStr: string;
 }
 export declare function GetDNSQuestion(msg: Buffer, startOffset: number): Question;
 export declare function GetDNSAnswer(msg: Buffer, startOffset: number): Record | undefined;

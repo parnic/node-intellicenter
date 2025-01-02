@@ -69,7 +69,7 @@ export function GetDNSAnswer(msg, startOffset) {
     offset += 2; // don't care about "class" of answer
     const ttlSeconds = msg.readUInt32BE(offset);
     offset += 4;
-    const remainingDataLength = msg.readUInt16BE(offset);
+    const rDataLength = msg.readUInt16BE(offset);
     offset += 2;
     switch (type) {
         case TypePtr: {
@@ -79,7 +79,7 @@ export function GetDNSAnswer(msg, startOffset) {
                 type: type,
                 ttlSeconds: ttlSeconds,
                 name: parsedResult.name,
-                endOffset: offset + remainingDataLength,
+                endOffset: offset + rDataLength,
                 domain: domainResult.name,
             };
             return ret;
@@ -91,26 +91,22 @@ export function GetDNSAnswer(msg, startOffset) {
                 type: type,
                 ttlSeconds: ttlSeconds,
                 name: parsedResult.name,
-                endOffset: offset + remainingDataLength,
+                endOffset: offset + rDataLength,
                 text: textResult.name,
             };
             return ret;
         }
         case TypeSrv: {
             const priority = msg.readUInt16BE(offset);
-            offset += 2;
-            const weight = msg.readUInt16BE(offset);
-            offset += 2;
-            const port = msg.readUInt16BE(offset);
-            offset += 2;
-            const targetResult = parseDnsName(msg, offset);
-            offset = targetResult.endOffset;
+            const weight = msg.readUInt16BE(offset + 2);
+            const port = msg.readUInt16BE(offset + 4);
+            const targetResult = parseDnsName(msg, offset + 6);
             const ret = {
                 interface: "srv",
                 type: type,
                 ttlSeconds: ttlSeconds,
                 name: parsedResult.name,
-                endOffset: offset,
+                endOffset: offset + rDataLength,
                 priority: priority,
                 weight: weight,
                 port: port,
@@ -120,21 +116,19 @@ export function GetDNSAnswer(msg, startOffset) {
         }
         case TypeA: {
             const o1 = msg.readUInt8(offset);
-            offset++;
-            const o2 = msg.readUInt8(offset);
-            offset++;
-            const o3 = msg.readUInt8(offset);
-            offset++;
-            const o4 = msg.readUInt8(offset);
-            offset++;
-            const address = `${o1.toString()}.${o2.toString()}.${o3.toString()}.${o4.toString()}`;
+            const o2 = msg.readUInt8(offset + 1);
+            const o3 = msg.readUInt8(offset + 2);
+            const o4 = msg.readUInt8(offset + 3);
+            const address = (o1 << 24) | (o2 << 16) | (o3 << 8) | (o4 << 0);
+            const addressStr = `${o1.toString()}.${o2.toString()}.${o3.toString()}.${o4.toString()}`;
             const ret = {
                 interface: "a",
                 type: type,
                 ttlSeconds: ttlSeconds,
                 name: parsedResult.name,
-                endOffset: offset + remainingDataLength,
+                endOffset: offset + rDataLength,
                 address: address,
+                addressStr: addressStr,
             };
             return ret;
         }
