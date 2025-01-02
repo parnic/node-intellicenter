@@ -1,35 +1,28 @@
-import * as dgram from "dgram";
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { createSocket } from "dgram";
 import { EventEmitter } from "events";
-import { setTimeout as setTimeoutSync } from "timers";
-import os from "os";
-import { GetDNSAnswer, GetDNSQuestion } from "./dns.js";
+import debug from "debug";
+import { ARecord, GetDNSAnswer, GetDNSQuestion, ipToString, PtrRecord, SrvRecord, } from "./dns.js";
+const debugFind = debug("ic:find");
+export class UnitInfo {
+    name;
+    hostname;
+    port;
+    address;
+    get addressStr() {
+        return ipToString(this.address);
+    }
+    constructor(_name, _hostname, _port, _address) {
+        this.name = _name;
+        this.hostname = _hostname;
+        this.port = _port;
+        this.address = _address;
+    }
+}
 export class FindUnits extends EventEmitter {
     constructor() {
         super();
-        const infs = os.networkInterfaces();
-        const localIps = [];
-        let localIp = "127.0.0.1";
-        Object.keys(infs).forEach((key) => {
-            infs[key]?.forEach((iface) => {
-                if (iface.internal) {
-                    return;
-                }
-                if (iface.family !== "IPv4") {
-                    return;
-                }
-                localIps.push(iface.address);
-            });
-        });
-        if (localIps.length === 0) {
-            console.error(`no local interfaces found, can't search for controllers.`);
-            // todo: emit error
-        }
-        else {
-            localIp = localIps[0];
-        }
-        if (localIps.length > 1) {
-            console.log(`found ${localIps.length.toString()} local IPs, using the first one for SSDP search (${localIp})`);
-        }
         // construct mDNS packet to ping for intellicenter controllers
         this.message = Buffer.alloc(34);
         let offset = 0;
@@ -48,7 +41,7 @@ export class FindUnits extends EventEmitter {
         offset = this.message.writeUInt8(0, offset); // no more strings
         offset = this.message.writeUInt16BE(0x000c, offset); // type: ptr
         this.message.writeUInt16BE(1, offset); // class: IN
-        this.finder = dgram.createSocket("udp4");
+        this.finder = createSocket("udp4");
         this.finder
             .on("listening", () => {
             this.finder.setBroadcast(true);
@@ -58,23 +51,25 @@ export class FindUnits extends EventEmitter {
                 this.sendServerBroadcast();
             }
         })
-            .on("message", (msg, remote) => {
-            this.foundServer(msg, remote);
+            .on("message", (msg) => {
+            this.foundServer(msg);
         })
             .on("close", () => {
-            // debugFind("closed");
-            console.log("closed");
+            debugFind("Finder socket closed.");
             this.emit("close");
         })
             .on("error", (e) => {
-            // debugFind("error: %O", e);
-            console.log("errored");
+            debugFind("Finder socket error: %O", e);
             this.emit("error", e);
         });
     }
     finder;
     bound = false;
     message;
+    units = [];
+    /**
+     * Begins a search and returns immediately. Must close the finder with close() when done with all searches.
+     */
     search() {
         if (!this.bound) {
             this.finder.bind();
@@ -83,27 +78,29 @@ export class FindUnits extends EventEmitter {
             this.sendServerBroadcast();
         }
     }
+    /**
+     * Searches for the given amount of time. Must close the finder with close() when done with all searches.
+     * @param searchTimeMs the number of milliseconds to search before giving up and returning found results (default: 5000)
+     * @returns Promise resolving to a list of discovered units, if any.
+     */
     async searchAsync(searchTimeMs) {
         const p = new Promise((resolve) => {
-            // debugFind("IntelliCenter finder searching for local units...");
-            setTimeoutSync(() => {
-                //   if (units.length === 0) {
-                //     debugFind("No units found searching locally.");
-                //   }
+            setTimeout(() => {
+                if (this.units.length === 0) {
+                    debugFind("No units found searching locally.");
+                }
                 this.removeAllListeners();
-                resolve(0);
+                resolve(this.units);
             }, searchTimeMs ?? 5000);
-            this.on("serverFound", () => {
-                //   debugFind(`IntelliCenter found unit ${JSON.stringify(unit)}`);
-                console.log("found");
-                //   units.push(unit);
+            this.on("serverFound", (unit) => {
+                debugFind("  found: %o", unit);
+                this.units.push(unit);
             });
             this.search();
         });
-        return Promise.resolve(p);
+        return p;
     }
-    foundServer(msg, remote) {
-        // debugFind("found something");
+    foundServer(msg) {
         let flags = 0;
         if (msg.length > 4) {
             flags = msg.readUInt16BE(2);
@@ -128,6 +125,7 @@ export class FindUnits extends EventEmitter {
         if (msg.length >= 8) {
             answers = msg.readUInt16BE(6);
         }
+        const records = [];
         if (answers > 0) {
             for (let i = 0; i < answers; i++) {
                 if (msg.length <= nextAnswerOffset) {
@@ -138,45 +136,33 @@ export class FindUnits extends EventEmitter {
                 if (!answer) {
                     break;
                 }
+                records.push(answer);
                 nextAnswerOffset = answer.endOffset;
-                if (answer.interface === "a") {
-                    console.log("a record:", answer);
-                }
             }
         }
-        const str = msg.toString();
-        console.log(str);
-        if (msg.length >= 40) {
-            const server = {
-                address: remote.address,
-                type: msg.readInt32LE(0),
-                port: msg.readInt16LE(8),
-                gatewayType: msg.readUInt8(10),
-                gatewaySubtype: msg.readUInt8(11),
-                gatewayName: msg.toString("utf8", 12, 29),
-            };
-            //   debugFind(
-            //     "  type: " +
-            //       server.type +
-            //       ", host: " +
-            //       server.address +
-            //       ":" +
-            //       server.port +
-            //       ", identified as " +
-            //       server.gatewayName,
-            //   );
-            if (server.type === 2) {
-                this.emit("serverFound", server);
+        if (records.find((r) => r.name.startsWith("Pentair -i"))) {
+            const srv = records.find((r) => r instanceof SrvRecord);
+            const a = records.find((r) => r instanceof ARecord);
+            if (!srv || !a) {
+                return;
             }
+            const unit = new UnitInfo(srv.name, a.name, srv.port, a.address);
+            this.emit("serverFound", unit);
         }
         else {
-            //   debugFind("  unexpected message");
+            debugFind("  found something that wasn't an IntelliCenter unit: %s", records
+                .filter((r) => r instanceof PtrRecord)
+                .map((r) => r.domain)
+                .join(", "));
         }
     }
     sendServerBroadcast() {
         this.finder.send(this.message, 0, this.message.length, 5353, "224.0.0.251");
-        // debugFind("Looking for IntelliCenter hosts...");
+        debugFind("Looking for IntelliCenter hosts...");
     }
+    /**
+     * Closes the finder socket.
+     */
     close() {
         this.finder.close();
     }

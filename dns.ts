@@ -1,52 +1,52 @@
-export const TypeTxt = 16;
-export const TypePtr = 12;
-export const TypeSrv = 33;
-export const TypeA = 1;
+const TypeTxt = 16;
+const TypePtr = 12;
+const TypeSrv = 33;
+const TypeA = 1;
 
 export class Question {
   public name = "";
   public type = 0;
   public class = 0;
   public endOffset = 0;
+}
 
-  constructor(_name: string, _type: number, _cls: number, _endOffset: number) {
-    this.name = _name;
-    this.type = _type;
-    this.class = _cls;
-    this.endOffset = _endOffset;
+export abstract class Record {
+  public type = 0;
+  public ttlSeconds = 0;
+  public name = "";
+  public endOffset = -1;
+}
+
+export class PtrRecord extends Record {
+  public domain = "";
+}
+
+export class TxtRecord extends Record {
+  public text = "";
+}
+
+export class SrvRecord extends Record {
+  public priority = 0;
+  public weight = 0;
+  public port = 0;
+  public target = "";
+}
+
+export class ARecord extends Record {
+  public address = 0;
+
+  public get addressStr(): string {
+    return ipToString(this.address);
   }
 }
 
-export interface Record {
-  interface: string | undefined;
-  type: number;
-  ttlSeconds: number;
-  name: string;
-  endOffset: number;
-}
-
-export interface PtrRecord extends Record {
-  interface: "ptr";
-  domain: string;
-}
-
-export interface TxtRecord extends Record {
-  interface: "txt";
-  text: string;
-}
-
-export interface SrvRecord extends Record {
-  interface: "srv";
-  priority: number;
-  weight: number;
-  port: number;
-  target: string;
-}
-
-export interface ARecord extends Record {
-  interface: "a";
-  address: number;
-  addressStr: string;
+export function ipToString(ip: number): string {
+  const o1 = (ip >> 24) & 0xff;
+  const o2 = (ip >> 16) & 0xff;
+  const o3 = (ip >> 8) & 0xff;
+  const o4 = (ip >> 0) & 0xff;
+  const addressStr = `${o1.toString()}.${o2.toString()}.${o3.toString()}.${o4.toString()}`;
+  return addressStr;
 }
 
 class dnsAnswerParseResult {
@@ -99,7 +99,13 @@ export function GetDNSQuestion(msg: Buffer, startOffset: number): Question {
   offset += 2;
   const cls = msg.readUInt16BE(offset);
   offset += 2;
-  return new Question(parsedResult.name, type, cls, offset);
+
+  const ret = new Question();
+  ret.name = parsedResult.name;
+  ret.type = type;
+  ret.class = cls;
+  ret.endOffset = offset;
+  return ret;
 }
 
 export function GetDNSAnswer(
@@ -121,27 +127,25 @@ export function GetDNSAnswer(
   switch (type) {
     case TypePtr: {
       const domainResult = parseDnsName(msg, offset);
-      const ret: PtrRecord = {
-        interface: "ptr",
-        type: type,
-        ttlSeconds: ttlSeconds,
-        name: parsedResult.name,
-        endOffset: offset + rDataLength,
-        domain: domainResult.name,
-      };
+
+      const ret = new PtrRecord();
+      ret.type = type;
+      ret.ttlSeconds = ttlSeconds;
+      ret.name = parsedResult.name;
+      ret.endOffset = offset + rDataLength;
+      ret.domain = domainResult.name;
       return ret;
     }
 
     case TypeTxt: {
       const textResult = parseDnsName(msg, offset);
-      const ret: TxtRecord = {
-        interface: "txt",
-        type: type,
-        ttlSeconds: ttlSeconds,
-        name: parsedResult.name,
-        endOffset: offset + rDataLength,
-        text: textResult.name,
-      };
+
+      const ret = new TxtRecord();
+      ret.type = type;
+      ret.ttlSeconds = ttlSeconds;
+      ret.name = parsedResult.name;
+      ret.endOffset = offset + rDataLength;
+      ret.text = textResult.name;
       return ret;
     }
 
@@ -151,37 +155,27 @@ export function GetDNSAnswer(
       const port = msg.readUInt16BE(offset + 4);
       const targetResult = parseDnsName(msg, offset + 6);
 
-      const ret: SrvRecord = {
-        interface: "srv",
-        type: type,
-        ttlSeconds: ttlSeconds,
-        name: parsedResult.name,
-        endOffset: offset + rDataLength,
-        priority: priority,
-        weight: weight,
-        port: port,
-        target: targetResult.name,
-      };
+      const ret = new SrvRecord();
+      ret.type = type;
+      ret.ttlSeconds = ttlSeconds;
+      ret.name = parsedResult.name;
+      ret.endOffset = offset + rDataLength;
+      ret.priority = priority;
+      ret.weight = weight;
+      ret.port = port;
+      ret.target = targetResult.name;
       return ret;
     }
 
     case TypeA: {
-      const o1 = msg.readUInt8(offset);
-      const o2 = msg.readUInt8(offset + 1);
-      const o3 = msg.readUInt8(offset + 2);
-      const o4 = msg.readUInt8(offset + 3);
-      const address = (o1 << 24) | (o2 << 16) | (o3 << 8) | (o4 << 0);
-      const addressStr = `${o1.toString()}.${o2.toString()}.${o3.toString()}.${o4.toString()}`;
+      const address = msg.readUInt32BE(offset);
 
-      const ret: ARecord = {
-        interface: "a",
-        type: type,
-        ttlSeconds: ttlSeconds,
-        name: parsedResult.name,
-        endOffset: offset + rDataLength,
-        address: address,
-        addressStr: addressStr,
-      };
+      const ret = new ARecord();
+      ret.type = type;
+      ret.ttlSeconds = ttlSeconds;
+      ret.name = parsedResult.name;
+      ret.endOffset = offset + rDataLength;
+      ret.address = address;
       return ret;
     }
 

@@ -4,12 +4,20 @@ import { v4 as uuidv4 } from "uuid";
 import { FindUnits } from "./finder.js";
 console.log("searching...");
 const f = new FindUnits();
-await f.searchAsync(5000);
-// temp. replace with the IP of your device
-const endpoint = "10.0.0.41";
+const units = await f.searchAsync(1000);
+f.close();
+console.log("Discovered units:", units);
+if (units.length === 0) {
+    throw new Error("no IntelliCenter units found, exiting.");
+}
+if (units.length > 1) {
+    throw new Error(`found more than one IntelliCenter unit, unsure which one to use. ${JSON.stringify(units)}`);
+}
+const endpoint = units[0].addressStr;
+const port = units[0].port;
 let pingTimeout;
-console.log("connecting to intellicenter device at", endpoint);
-const client = new WebSocket(`ws://${endpoint}:6680`);
+console.log("connecting to intellicenter device at", endpoint, "port", port);
+const client = new WebSocket(`ws://${endpoint}:${port.toString()}`);
 const heartbeat = () => {
     clearTimeout(pingTimeout);
     pingTimeout = setTimeout(() => {
