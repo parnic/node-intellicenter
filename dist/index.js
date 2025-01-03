@@ -1,7 +1,7 @@
 "use strict";
 import { WebSocket } from "ws";
-import { v4 as uuidv4 } from "uuid";
 import { FindUnits } from "./finder.js";
+import { GetSystemInfoRequest } from "./messages/system-info.js";
 console.log("searching...");
 const f = new FindUnits();
 const units = await f.searchAsync(1000);
@@ -31,7 +31,7 @@ client.on("close", () => {
     clearTimeout(pingTimeout);
 });
 client.on("message", (msg) => {
-    const respObj = JSON.parse(msg.toString()); // eslint-disable-line @typescript-eslint/no-unsafe-assignment
+    const respObj = JSON.parse(msg.toString());
     console.log(JSON.stringify(respObj, null, 2));
 });
 await new Promise((resolve, reject) => {
@@ -40,42 +40,7 @@ await new Promise((resolve, reject) => {
 }).then(() => {
     console.log("connected");
     console.log("sending request...");
-    const req = {
-        condition: "",
-        objectList: [
-            {
-                objnam: "_5451",
-                keys: [
-                    "VER",
-                    "MODE",
-                    "ZIP",
-                    "TIMZON",
-                    "PROPNAME",
-                    "NAME",
-                    "ADDRESS",
-                    "CITY",
-                    "STATE",
-                    "PHONE",
-                    "PHONE2",
-                    "EMAIL",
-                    "EMAIL2",
-                    "COUNTRY",
-                    "PHONE",
-                    "LOCX",
-                    "LOCY",
-                    "AVAIL",
-                    "SERVICE",
-                    "UPDATE",
-                    "PROGRESS",
-                    "IN",
-                    "VALVE",
-                    "HEATING",
-                ],
-            },
-        ],
-        command: "GETPARAMLIST",
-        messageID: uuidv4(),
-    };
+    const req = GetSystemInfoRequest();
     client.send(JSON.stringify(req));
     client.close();
 });
