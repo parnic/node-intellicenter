@@ -1,9 +1,7 @@
 "use strict";
 
-import { WebSocket } from "ws";
 import { FindUnits } from "./finder.js";
-import { GetSystemInfoRequest } from "./messages/system-info.js";
-import { ICResponse } from "./messages/response.js";
+import { Unit } from "./unit.js";
 
 console.log("searching...");
 const f = new FindUnits();
@@ -24,37 +22,11 @@ if (units.length > 1) {
 const endpoint = units[0].addressStr;
 const port = units[0].port;
 
-let pingTimeout: ReturnType<typeof setTimeout>;
-
 console.log("connecting to intellicenter device at", endpoint, "port", port);
-const client = new WebSocket(`ws://${endpoint}:${port.toString()}`);
-
-const heartbeat = () => {
-  clearTimeout(pingTimeout);
-
-  pingTimeout = setTimeout(() => {
-    client.terminate();
-  }, 30000 + 1000);
-};
-
-client.on("error", console.error);
-client.on("open", heartbeat);
-client.on("ping", heartbeat);
-client.on("close", () => {
-  clearTimeout(pingTimeout);
-});
-
-client.on("message", (msg: Buffer) => {
-  const respObj = JSON.parse(msg.toString()) as ICResponse;
-  console.log(JSON.stringify(respObj, null, 2));
-});
-await new Promise((resolve, reject) => {
-  client.once("error", reject);
-  client.once("open", resolve);
-}).then(() => {
-  console.log("connected");
-  console.log("sending request...");
-  const req = GetSystemInfoRequest();
-  client.send(JSON.stringify(req));
-  client.close();
-});
+const unit = new Unit(endpoint, port);
+await unit.connect();
+console.log("connected");
+console.log("sending Get System Info request...");
+const resp = await unit.getSystemInfo();
+console.log("got response:", JSON.stringify(resp, null, 2));
+unit.close();
