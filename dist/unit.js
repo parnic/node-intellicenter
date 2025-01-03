@@ -1,6 +1,5 @@
 import { EventEmitter } from "events";
 import { WebSocket } from "ws";
-import { GetSystemInfoRequest } from "./messages/system-info.js";
 export class Unit extends EventEmitter {
     endpoint;
     port;
@@ -53,10 +52,6 @@ export class Unit extends EventEmitter {
                 resolve(resp);
             });
         });
-    }
-    async getSystemInfo() {
-        const req = GetSystemInfoRequest();
-        return await this.send(req);
     }
 }
 //# sourceMappingURL=unit.js.map

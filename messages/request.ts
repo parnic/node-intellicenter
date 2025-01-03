@@ -1,8 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
+import { ICParam } from "./param.js";
 
 export class ICRequestObj {
   public objnam = "";
   public keys: string[] = [];
+  public params?: ICParam;
 }
 
 export class ICRequest {

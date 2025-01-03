@@ -12,5 +12,4 @@ export declare class Unit extends EventEmitter {
     private heartbeat;
     private onClientMessage;
     send(request: ICRequest): Promise<ICResponse>;
-    getSystemInfo(): Promise<ICResponse>;
 }

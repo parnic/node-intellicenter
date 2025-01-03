@@ -2,7 +2,6 @@ import { EventEmitter } from "events";
 import { WebSocket } from "ws";
 import { ICRequest } from "./messages/request.js";
 import { ICResponse } from "./messages/response.js";
-import { GetSystemInfoRequest } from "./messages/system-info.js";
 
 export class Unit extends EventEmitter {
   private client?: WebSocket;
@@ -68,10 +67,5 @@ export class Unit extends EventEmitter {
         resolve(resp);
       });
     });
-  }
-
-  public async getSystemInfo(): Promise<ICResponse> {
-    const req = GetSystemInfoRequest();
-    return await this.send(req);
   }
 }

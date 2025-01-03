@@ -1,0 +1,2 @@
+[OUTGOING] {"command":"SetParamList","objectList":[{"objnam":"B1101","params":{"STATUS":"ON"}}],"messageID":"B1101"}
+[INCOMING] {"command":"SetParamList","messageID":"B1101","response":"200"}

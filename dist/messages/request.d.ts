@@ -1,6 +1,8 @@
+import { ICParam } from "./param.js";
 export declare class ICRequestObj {
     objnam: string;
     keys: string[];
+    params?: ICParam;
 }
 export declare class ICRequest {
     condition?: string;

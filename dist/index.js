@@ -1,5 +1,9 @@
 "use strict";
 import { FindUnits } from "./finder.js";
+import { GetBodyStatus } from "./messages/body-status.js";
+import { GetSystemConfiguration } from "./messages/configuration.js";
+// import { SetItemStatus } from "./messages/set-status.js";
+import { GetSystemInfoRequest } from "./messages/system-info.js";
 import { Unit } from "./unit.js";
 console.log("searching...");
 const f = new FindUnits();
@@ -14,12 +18,26 @@ if (units.length > 1) {
 }
 const endpoint = units[0].addressStr;
 const port = units[0].port;
+// const endpoint = "10.0.0.41";
+// const port = 6680;
 console.log("connecting to intellicenter device at", endpoint, "port", port);
 const unit = new Unit(endpoint, port);
 await unit.connect();
 console.log("connected");
 console.log("sending Get System Info request...");
-const resp = await unit.getSystemInfo();
+let resp = await unit.send(GetSystemInfoRequest());
 console.log("got response:", JSON.stringify(resp, null, 2));
+console.log("sending Get System Config request...");
+resp = await unit.send(GetSystemConfiguration());
+console.log("got response:", JSON.stringify(resp, null, 2));
+console.log("sending Get Body Status request...");
+resp = await unit.send(GetBodyStatus());
+console.log("got response:", JSON.stringify(resp, null, 2));
+// console.log("turning off pool...");
+// resp = await unit.send(SetItemStatus("B1101", false));
+// console.log("got response:", JSON.stringify(resp, null, 2));
+// console.log("turning off water feature...");
+// resp = await unit.send(SetItemStatus("C0003", false));
+// console.log("got response:", JSON.stringify(resp, null, 2));
 unit.close();
 //# sourceMappingURL=index.js.map
