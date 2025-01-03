@@ -12,6 +12,7 @@ import {
   PtrRecord,
   Record,
   SrvRecord,
+  TypePtr,
 } from "./dns.js";
 
 const debugFind = debug("ic:find");
@@ -59,7 +60,7 @@ export class FindUnits extends EventEmitter {
     offset = this.message.writeUInt8("local".length, offset);
     offset += this.message.write("local", offset);
     offset = this.message.writeUInt8(0, offset); // no more strings
-    offset = this.message.writeUInt16BE(0x000c, offset); // type: ptr
+    offset = this.message.writeUInt16BE(TypePtr, offset); // type
     this.message.writeUInt16BE(1, offset); // class: IN
 
     this.finder = createSocket("udp4");

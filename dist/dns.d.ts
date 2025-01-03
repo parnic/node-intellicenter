@@ -1,3 +1,7 @@
+export declare const TypeTxt = 16;
+export declare const TypePtr = 12;
+export declare const TypeSrv = 33;
+export declare const TypeA = 1;
 export declare class Question {
     name: string;
     type: number;

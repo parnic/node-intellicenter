@@ -1,7 +1,7 @@
-const TypeTxt = 16;
-const TypePtr = 12;
-const TypeSrv = 33;
-const TypeA = 1;
+export const TypeTxt = 16;
+export const TypePtr = 12;
+export const TypeSrv = 33;
+export const TypeA = 1;
 
 export class Question {
   public name = "";
