@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createSocket } from "dgram";
 import { EventEmitter } from "events";
 import debug from "debug";
