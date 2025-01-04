@@ -21,13 +21,18 @@
   "license": "MIT",
   "author": "Parnic",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./unit": "./dist/unit.js",
+    "./finder": "./dist/finder.js",
+    "./messages": "./dist/messages/messages.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "index": "tsc && node dist/index.js",
-    "lint": "eslint . && prettier . --check"
+    "example": "tsc && node dist/example.js",
+    "lint": "eslint . && prettier . --check",
+    "lint:fix": "eslint . --fix && prettier . --write"
   },
   "dependencies": {
     "debug": "^4.4.0",
