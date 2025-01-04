@@ -2,6 +2,7 @@ import { GetBodyStatus } from "./body-status.js";
 import { GetChemicalStatus } from "./chem-status.js";
 import { GetSystemConfiguration } from "./configuration.js";
 import { GetHeaters } from "./get-heater.js";
+import { SubscribeToUpdates } from "./notify.js";
 import { GetSchedule } from "./schedule.js";
 import { SetHeatMode } from "./set-heater.js";
 import { SetItemStatus } from "./set-status.js";
@@ -18,4 +19,5 @@ export const messages = {
   SetHeatMode,
   SetItemStatus,
   SetSetpoint,
+  SubscribeToUpdates,
 };

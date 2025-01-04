@@ -57,6 +57,10 @@ export class Unit extends EventEmitter {
 
   private onClientMessage = (msg: Buffer) => {
     const respObj = JSON.parse(msg.toString()) as ICResponse;
+    if (respObj.command.toLowerCase() === "notifylist") {
+      this.emit(`notify`, respObj);
+    }
+
     this.emit(`response-${respObj.messageID}`, respObj);
   };
 

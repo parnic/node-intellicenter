@@ -31,8 +31,16 @@ const unit = new Unit(endpoint, port);
 await unit.connect();
 console.log("connected");
 
+unit.on("notify", (msg) => {
+  console.log("received notify:", msg);
+});
+
+console.log("subscribing for updates...");
+let resp = await unit.send(messages.SubscribeToUpdates("B1202", "LOTMP"));
+console.log("got response:", JSON.stringify(resp, null, 2));
+
 console.log("sending Get System Info request...");
-let resp = await unit.send(messages.GetSystemInformation());
+resp = await unit.send(messages.GetSystemInformation());
 console.log("got response:", JSON.stringify(resp, null, 2));
 
 console.log("sending Get System Config request...");
