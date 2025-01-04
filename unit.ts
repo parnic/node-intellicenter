@@ -16,6 +16,8 @@ const debugUnit = debug("ic:unit");
  * Contains methods to connect to and communicate with an IntelliCenter controller.
  *
  * Call `connect` to connect to the unit.
+ * Use `send` to send a message.
+ * Subscribe to events to process socket conditions, notify updates, and message responses (if not `await`ing the response)
  *
  * Available events:
  *
@@ -89,9 +91,13 @@ export class Unit extends EventEmitter {
    * Closes the connection to the unit.
    */
   public close() {
+    if (!this.client) {
+      return;
+    }
+
     debugUnit("closing connection by request");
     this.emit("close");
-    this.client?.close();
+    this.client.close();
   }
 
   private socketCleanup = () => {
@@ -142,6 +148,12 @@ export class Unit extends EventEmitter {
    * @returns a promise that resolves into the {@linkcode ICResponse} with information about the request.
    */
   public async send(request: ICRequest): Promise<ICResponse> {
+    if (!this.client) {
+      return await new Promise(() => {
+        throw new Error("client not connected");
+      });
+    }
+
     const payload = JSON.stringify(request);
     debugUnit(
       "sending message of length %d with id %s",
@@ -149,7 +161,7 @@ export class Unit extends EventEmitter {
       request.messageID,
     );
 
-    this.client?.send(payload);
+    this.client.send(payload);
     return await new Promise((resolve) => {
       this.once(`response-${request.messageID}`, (resp: ICResponse) => {
         debugUnit("  returning response to message %s", request.messageID);

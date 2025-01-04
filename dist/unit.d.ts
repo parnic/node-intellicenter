@@ -5,6 +5,8 @@ import { ICResponse } from "./messages/response.js";
  * Contains methods to connect to and communicate with an IntelliCenter controller.
  *
  * Call `connect` to connect to the unit.
+ * Use `send` to send a message.
+ * Subscribe to events to process socket conditions, notify updates, and message responses (if not `await`ing the response)
  *
  * Available events:
  *
