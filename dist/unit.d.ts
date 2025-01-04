@@ -6,9 +6,12 @@ export declare class Unit extends EventEmitter {
     port: number;
     private client?;
     private pingTimeout?;
+    private pingTimer?;
+    private pingInterval;
     constructor(endpoint: string, port?: number);
     connect(): Promise<void>;
     close(): void;
+    private socketCleanup;
     private heartbeat;
     private onClientMessage;
     send(request: ICRequest): Promise<ICResponse>;
