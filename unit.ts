@@ -4,9 +4,24 @@ import debug from "debug";
 
 import { ICRequest } from "./messages/request.js";
 import { ICResponse } from "./messages/response.js";
+// needed for jsdoc
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { messages } from "./messages/messages.js";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { SubscribeToUpdates } from "./messages/notify.js";
 
 const debugUnit = debug("ic:unit");
 
+/**
+ * Contains methods to connect to and communicate with an IntelliCenter controller.
+ *
+ * Call `connect` to connect to the unit.
+ *
+ * Available events:
+ *
+ * * `"response-{messageID}"` - fired once per message sent with `send()` where {messageID} is the ID specified in the {@linkcode ICRequest} given to `send()`
+ * * `"notify"` - fired when an update is available to a property previously subscribed to via a {@linkcode SubscribeToUpdates} request
+ */
 export class Unit extends EventEmitter {
   private client?: WebSocket;
   private pingTimeout?: ReturnType<typeof setTimeout>;
@@ -23,6 +38,9 @@ export class Unit extends EventEmitter {
     this.port = port;
   }
 
+  /**
+   * Connects to the specified unit and maintains a connection to it until `close()` is called.
+   */
   public async connect() {
     if (this.client) {
       throw new Error("can't open a client that is already open");
@@ -59,6 +77,9 @@ export class Unit extends EventEmitter {
     debugUnit("connected");
   }
 
+  /**
+   * Closes the connection to the unit.
+   */
   public close() {
     debugUnit("closing connection by request");
     this.client?.close();
@@ -104,6 +125,12 @@ export class Unit extends EventEmitter {
     this.emit(`response-${respObj.messageID}`, respObj);
   };
 
+  /**
+   * Sends a request to the unit.
+   *
+   * @param request an message from {@linkcode messages} to send to the unit.
+   * @returns a promise that resolves into the {@linkcode ICResponse} with information about the request.
+   */
   public async send(request: ICRequest): Promise<ICResponse> {
     const payload = JSON.stringify(request);
     debugUnit(

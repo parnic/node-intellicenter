@@ -2,6 +2,16 @@ import { EventEmitter } from "events";
 import { WebSocket } from "ws";
 import debug from "debug";
 const debugUnit = debug("ic:unit");
+/**
+ * Contains methods to connect to and communicate with an IntelliCenter controller.
+ *
+ * Call `connect` to connect to the unit.
+ *
+ * Available events:
+ *
+ * * `"response-{messageID}"` - fired once per message sent with `send()` where {messageID} is the ID specified in the {@linkcode ICRequest} given to `send()`
+ * * `"notify"` - fired when an update is available to a property previously subscribed to via a {@linkcode SubscribeToUpdates} request
+ */
 export class Unit extends EventEmitter {
     endpoint;
     port;
@@ -16,6 +26,9 @@ export class Unit extends EventEmitter {
         this.endpoint = endpoint;
         this.port = port;
     }
+    /**
+     * Connects to the specified unit and maintains a connection to it until `close()` is called.
+     */
     async connect() {
         if (this.client) {
             throw new Error("can't open a client that is already open");
@@ -43,6 +56,9 @@ export class Unit extends EventEmitter {
         });
         debugUnit("connected");
     }
+    /**
+     * Closes the connection to the unit.
+     */
     close() {
         debugUnit("closing connection by request");
         this.client?.close();
@@ -78,6 +94,12 @@ export class Unit extends EventEmitter {
         }
         this.emit(`response-${respObj.messageID}`, respObj);
     };
+    /**
+     * Sends a request to the unit.
+     *
+     * @param request an message from {@linkcode messages} to send to the unit.
+     * @returns a promise that resolves into the {@linkcode ICResponse} with information about the request.
+     */
     async send(request) {
         const payload = JSON.stringify(request);
         debugUnit("sending message of length %d with id %s", payload.length, request.messageID);

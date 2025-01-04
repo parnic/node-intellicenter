@@ -1,6 +1,16 @@
 import { EventEmitter } from "events";
 import { ICRequest } from "./messages/request.js";
 import { ICResponse } from "./messages/response.js";
+/**
+ * Contains methods to connect to and communicate with an IntelliCenter controller.
+ *
+ * Call `connect` to connect to the unit.
+ *
+ * Available events:
+ *
+ * * `"response-{messageID}"` - fired once per message sent with `send()` where {messageID} is the ID specified in the {@linkcode ICRequest} given to `send()`
+ * * `"notify"` - fired when an update is available to a property previously subscribed to via a {@linkcode SubscribeToUpdates} request
+ */
 export declare class Unit extends EventEmitter {
     endpoint: string;
     port: number;
@@ -9,10 +19,22 @@ export declare class Unit extends EventEmitter {
     private pingTimer?;
     private pingInterval;
     constructor(endpoint: string, port?: number);
+    /**
+     * Connects to the specified unit and maintains a connection to it until `close()` is called.
+     */
     connect(): Promise<void>;
+    /**
+     * Closes the connection to the unit.
+     */
     close(): void;
     private socketCleanup;
     private heartbeat;
     private onClientMessage;
+    /**
+     * Sends a request to the unit.
+     *
+     * @param request an message from {@linkcode messages} to send to the unit.
+     * @returns a promise that resolves into the {@linkcode ICResponse} with information about the request.
+     */
     send(request: ICRequest): Promise<ICResponse>;
 }
