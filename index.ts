@@ -51,6 +51,10 @@ console.log("sending Get Heaters request...");
 resp = await unit.send(messages.GetHeaters());
 console.log("got response:", JSON.stringify(resp, null, 2));
 
+console.log("sending Get Schedule request...");
+resp = await unit.send(messages.GetSchedule());
+console.log("got response:", JSON.stringify(resp, null, 2));
+
 // console.log("sending Set Setpoint request...");
 // resp = await unit.send(messages.SetSetpoint("B1202", 97));
 // console.log("got response:", JSON.stringify(resp, null, 2));
@@ -63,8 +67,8 @@ console.log("got response:", JSON.stringify(resp, null, 2));
 // resp = await unit.send(messages.SetItemStatus("C0003", false));
 // console.log("got response:", JSON.stringify(resp, null, 2));
 
-console.log("sending Set Heatmode request...");
-resp = await unit.send(messages.SetHeatMode("B1202", true));
-console.log("got response:", JSON.stringify(resp, null, 2));
+// console.log("sending Set Heatmode request...");
+// resp = await unit.send(messages.SetHeatMode("B1202", true));
+// console.log("got response:", JSON.stringify(resp, null, 2));
 
 unit.close();
