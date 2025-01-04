@@ -20,7 +20,13 @@ export declare class UnitInfo {
  * * `"serverFound"` - fired immediately when an IntelliCenter unit has been located; receives a {@linkcode UnitInfo} argument
  */
 export declare class FindUnits extends EventEmitter {
-    constructor();
+    broadcastInterface?: string | undefined;
+    /**
+     * Creates a new finder.
+     *
+     * @param broadcastInterface the address of the interface to send the broadcast to. If not specified, will use system selection. Only necessary if you have more than one network adapter/interface and want to search on a specific one.
+     */
+    constructor(broadcastInterface?: string | undefined);
     private finder;
     private bound;
     private message;

@@ -51,7 +51,12 @@ export class UnitInfo {
  * * `"serverFound"` - fired immediately when an IntelliCenter unit has been located; receives a {@linkcode UnitInfo} argument
  */
 export class FindUnits extends EventEmitter {
-  constructor() {
+  /**
+   * Creates a new finder.
+   *
+   * @param broadcastInterface the address of the interface to send the broadcast to. If not specified, will use system selection. Only necessary if you have more than one network adapter/interface and want to search on a specific one.
+   */
+  constructor(public broadcastInterface?: string) {
     super();
 
     // construct mDNS packet to ping for intellicenter controllers
@@ -76,6 +81,9 @@ export class FindUnits extends EventEmitter {
     this.finder = createSocket("udp4");
     this.finder
       .on("listening", () => {
+        if (this.broadcastInterface) {
+          this.finder.setMulticastInterface(this.broadcastInterface);
+        }
         this.finder.setBroadcast(true);
         this.finder.setMulticastTTL(128);
 
