@@ -16,6 +16,7 @@ import { ICResponse } from "./messages/response.js";
  * * `"open"` - fired when the socket connects to the unit successfully
  * * `"error"` - fired when the socket encounters an unrecoverable error and will close
  * * `"timeout"` - fired when the socket has not received a ping response within the allowed threshold and will close
+ * * `"connected"` - fired when a connection has completed successfully
  */
 export declare class Unit extends EventEmitter {
     endpoint: string;
