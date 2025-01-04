@@ -10,6 +10,10 @@ import { ICResponse } from "./messages/response.js";
  *
  * * `"response-{messageID}"` - fired once per message sent with `send()` where {messageID} is the ID specified in the {@linkcode ICRequest} given to `send()`
  * * `"notify"` - fired when an update is available to a property previously subscribed to via a {@linkcode SubscribeToUpdates} request
+ * * `"close"` - fired any time the client is closed by any means (timeout, by request, error, etc.)
+ * * `"open"` - fired when the socket connects to the unit successfully
+ * * `"error"` - fired when the socket encounters an unrecoverable error and will close
+ * * `"timeout"` - fired when the socket has not received a ping response within the allowed threshold and will close
  */
 export declare class Unit extends EventEmitter {
     endpoint: string;

@@ -21,6 +21,10 @@ const debugUnit = debug("ic:unit");
  *
  * * `"response-{messageID}"` - fired once per message sent with `send()` where {messageID} is the ID specified in the {@linkcode ICRequest} given to `send()`
  * * `"notify"` - fired when an update is available to a property previously subscribed to via a {@linkcode SubscribeToUpdates} request
+ * * `"close"` - fired any time the client is closed by any means (timeout, by request, error, etc.)
+ * * `"open"` - fired when the socket connects to the unit successfully
+ * * `"error"` - fired when the socket encounters an unrecoverable error and will close
+ * * `"timeout"` - fired when the socket has not received a ping response within the allowed threshold and will close
  */
 export class Unit extends EventEmitter {
   private client?: WebSocket;
@@ -56,9 +60,13 @@ export class Unit extends EventEmitter {
     this.client.on("error", (evt) => {
       // todo: emit event so we can reconnect? auto reconnect?
       debugUnit("error in websocket: $o", evt);
+      this.emit("error");
       socketCleanup();
     });
-    this.client.on("open", heartbeat);
+    this.client.on("open", () => {
+      this.emit("open");
+      heartbeat();
+    });
     this.client.on("ping", heartbeat);
     this.client.on("pong", heartbeat);
     this.client.on("close", socketCleanup);
@@ -82,6 +90,7 @@ export class Unit extends EventEmitter {
    */
   public close() {
     debugUnit("closing connection by request");
+    this.emit("close");
     this.client?.close();
   }
 
@@ -108,6 +117,7 @@ export class Unit extends EventEmitter {
 
     this.pingTimeout = setTimeout(() => {
       debugUnit("terminating connection due to heartbeat timeout");
+      this.emit("timeout");
       this.client?.terminate();
       this.socketCleanup();
     }, this.pingInterval + 5000);
