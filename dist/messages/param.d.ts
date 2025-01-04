@@ -20,6 +20,7 @@ export declare class ICParam {
     CLK24A?: string;
     COMUART?: string;
     COOL?: string;
+    COOLING?: string;
     COUNT?: string;
     COUNTRY?: string;
     CYACID?: string;
@@ -34,6 +35,7 @@ export declare class ICParam {
     FILTER?: string;
     FREEZE?: string;
     GPM?: string;
+    GROUP?: string;
     HEATER?: string;
     HEATING?: "HEATING" | "ON" | "OFF";
     HITMP?: string;
@@ -92,8 +94,10 @@ export declare class ICParam {
     SHARE?: string;
     SHOMNU?: string;
     SINDEX?: string;
+    SINGLE?: "SINGLE" | "ON" | "OFF";
     SNAME?: string;
     SOURCE?: string;
+    SMTSRT?: string;
     SPEED?: string;
     SRIS?: string;
     SSET?: string;
