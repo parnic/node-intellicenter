@@ -1,6 +1,11 @@
 import { GetRequest, ICRequest, ICRequestObj } from "./request.js";
 
-export function GetSystemInfoRequest(): ICRequest {
+/**
+ * Requests information about this controller such as owner, address, etc.
+ * 
+ * @returns the object used to issue this request
+ */
+export function GetSystemInformation(): ICRequest {
   const req = GetRequest();
   req.command = "GETPARAMLIST";
   req.condition = "";
