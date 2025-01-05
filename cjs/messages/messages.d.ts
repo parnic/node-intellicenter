@@ -9,17 +9,4 @@ import { SetHeatMode } from "./set-heater.js";
 import { SetObjectStatus } from "./set-object-status.js";
 import { SetSetpoint } from "./setpoint.js";
 import { GetSystemInformation } from "./system-info.js";
-export const messages = {
-    GetBodyStatus,
-    GetChemicalStatus,
-    GetCircuitStatus,
-    GetHeaters,
-    GetSchedule,
-    GetSystemConfiguration,
-    GetSystemInformation,
-    SetHeatMode,
-    SetObjectStatus,
-    SetSetpoint,
-    SubscribeToUpdates,
-};
-//# sourceMappingURL=messages.js.map
+export { GetBodyStatus, GetChemicalStatus, GetCircuitStatus, GetHeaters, GetSchedule, GetSystemConfiguration, GetSystemInformation, SetHeatMode, SetObjectStatus, SetSetpoint, SubscribeToUpdates, };

@@ -9,16 +9,5 @@ import { SetHeatMode } from "./set-heater.js";
 import { SetObjectStatus } from "./set-object-status.js";
 import { SetSetpoint } from "./setpoint.js";
 import { GetSystemInformation } from "./system-info.js";
-export declare const messages: {
-    GetBodyStatus: typeof GetBodyStatus;
-    GetChemicalStatus: typeof GetChemicalStatus;
-    GetCircuitStatus: typeof GetCircuitStatus;
-    GetHeaters: typeof GetHeaters;
-    GetSchedule: typeof GetSchedule;
-    GetSystemConfiguration: typeof GetSystemConfiguration;
-    GetSystemInformation: typeof GetSystemInformation;
-    SetHeatMode: typeof SetHeatMode;
-    SetObjectStatus: typeof SetObjectStatus;
-    SetSetpoint: typeof SetSetpoint;
-    SubscribeToUpdates: typeof SubscribeToUpdates;
-};
+export { GetBodyStatus, GetChemicalStatus, GetCircuitStatus, GetHeaters, GetSchedule, GetSystemConfiguration, GetSystemInformation, SetHeatMode, SetObjectStatus, SetSetpoint, SubscribeToUpdates, };
+//# sourceMappingURL=messages.js.map

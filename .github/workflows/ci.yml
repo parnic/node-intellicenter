@@ -38,28 +38,40 @@ jobs:
       id: lint
       run: npm run lint
 
-    # This will fail the workflow if the `dist/` directory is different than
-    # expected.
+    # This will fail the workflow if either of the output directories are different
+    # than expected.
     - name: Compare Directories
       id: diff
       run: |
-        if [ ! -d dist/ ]; then
-          echo "Expected dist/ directory does not exist.  See status below:"
+        if [ ! -d cjs/ ]; then
+          echo "Expected cjs/ directory does not exist.  See status below:"
           ls -la ./
           exit 1
         fi
-        if [ "$(git diff --ignore-space-at-eol --text dist/ | wc -l)" -gt "0" ]; then
+        if [ "$(git diff --ignore-space-at-eol --text cjs/ | wc -l)" -gt "0" ]; then
           echo "Detected uncommitted changes after build. See status below:"
-          git diff --ignore-space-at-eol --text dist/
+          git diff --ignore-space-at-eol --text cjs/
+          exit 1
+        fi
+        if [ ! -d esm/ ]; then
+          echo "Expected esm/ directory does not exist.  See status below:"
+          ls -la ./
+          exit 1
+        fi
+        if [ "$(git diff --ignore-space-at-eol --text esm/ | wc -l)" -gt "0" ]; then
+          echo "Detected uncommitted changes after build. See status below:"
+          git diff --ignore-space-at-eol --text esm/
           exit 1
         fi
 
-    # If `dist/` was different than expected, upload the expected version as a
+    # If outdir was different than expected, upload the expected version as a
     # workflow artifact.
     - if: ${{ failure() && steps.diff.outcome == 'failure' }}
       name: Upload Artifact
       id: upload
       uses: actions/upload-artifact@v4
       with:
-        name: dist-${{ matrix.node-version }}-diff
-        path: dist/
+        name: outdir-${{ matrix.node-version }}-diff
+        path: |
+          cjs/
+          esm/

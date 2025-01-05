@@ -9,17 +9,4 @@ import { SetHeatMode } from "./set-heater.js";
 import { SetObjectStatus } from "./set-object-status.js";
 import { SetSetpoint } from "./setpoint.js";
 import { GetSystemInformation } from "./system-info.js";
-
-export {
-  GetBodyStatus,
-  GetChemicalStatus,
-  GetCircuitStatus,
-  GetHeaters,
-  GetSchedule,
-  GetSystemConfiguration,
-  GetSystemInformation,
-  SetHeatMode,
-  SetObjectStatus,
-  SetSetpoint,
-  SubscribeToUpdates,
-};
+export { GetBodyStatus, GetChemicalStatus, GetCircuitStatus, GetHeaters, GetSchedule, GetSystemConfiguration, GetSystemInformation, SetHeatMode, SetObjectStatus, SetSetpoint, SubscribeToUpdates, };

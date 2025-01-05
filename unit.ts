@@ -6,7 +6,7 @@ import { ICRequest } from "./messages/request.js";
 import { ICResponse } from "./messages/response.js";
 // needed for jsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { messages } from "./messages/messages.js";
+import * as messages from "./messages/messages.js";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { SubscribeToUpdates } from "./messages/notify.js";
 

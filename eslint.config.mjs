@@ -14,6 +14,6 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ["dist/**", "eslint.config.mjs"],
+    ignores: ["cjs/**", "esm/**", "eslint.config.mjs"],
   },
 );

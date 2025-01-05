@@ -1,3 +1,4 @@
 /.github/
-/dist/
+/cjs/
+/esm/
 /connection-logs/
