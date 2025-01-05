@@ -76,7 +76,8 @@
     "build": "tsc --module commonjs --moduleResolution classic --outDir cjs/ && echo {\"type\": \"commonjs\"} > cjs/package.json && tsc --outDir esm/ && echo {\"type\": \"module\"} > esm/package.json",
     "example": "tsc && node esm/example.js",
     "lint": "eslint . && prettier . --check && markdownlint-cli2 **/*.md",
-    "lint:fix": "eslint . --fix && prettier . --write && markdownlint-cli2 --fix **/*.md"
+    "lint:fix": "eslint . --fix && prettier . --write && markdownlint-cli2 --fix **/*.md",
+    "list-objects": "tsc && node esm/list-objects.js"
   },
   "dependencies": {
     "debug": "^4.4.0",
@@ -86,10 +87,12 @@
   "devDependencies": {
     "@eslint/js": "^9.17.0",
     "@types/debug": "^4.1.12",
+    "@types/minimist": "^1.2.5",
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.13",
     "eslint": "^9.17.0",
     "markdownlint-cli2": "^0.17.1",
+    "minimist": "^1.2.8",
     "prettier": "3.4.2",
     "supports-color": "^10.0.0",
     "typescript": "^5.7.2",
