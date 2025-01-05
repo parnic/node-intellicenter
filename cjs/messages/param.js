@@ -108,7 +108,7 @@ class ICParam {
     START; // seems to be very context-sensitive start value. sometimes a hint for how to interpret the TIME field ("ABSTIM"), other times as a single number ("6", in Heater response), and others as perhaps a date (in format "MM,DD,YY" where leading 0s are replaced with spaces, e.g. "12,30,24" vs " 1, 6,25")
     STATE;
     STATIC;
-    STATUS;
+    STATUS; // seen values for this: "STATUS", "ON", "OFF", "OK", and numbers ("4", "1", etc.);
     STOP; // seems to be very context-sensitive stop value. sometimes a hint for how to interpret the TIME field ("ABSTIM"), other times as a single number ("3", in Heater response), and others as perhaps a date (in format "MM,DD,YY" where leading 0s are replaced with spaces, e.g. "12,30,24" vs " 1, 6,25")
     SUBTYP;
     SUPER;

@@ -104,7 +104,7 @@ export declare class ICParam {
     START?: string;
     STATE?: string;
     STATIC?: string;
-    STATUS?: "STATUS" | "ON" | "OFF";
+    STATUS?: string;
     STOP?: string;
     SUBTYP?: string;
     SUPER?: "SUPER" | "ON" | "OFF";
