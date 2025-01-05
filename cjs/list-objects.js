@@ -42,7 +42,7 @@ const example = async () => {
     const unit = new index_js_1.Unit(endpoint, port);
     await unit.connect();
     console.log("...connected.");
-    const customRequest = new request_js_1.ICRequest();
+    const customRequest = (0, request_js_1.GetRequest)();
     customRequest.command = "GetParamList";
     customRequest.condition = "";
     const reqObj = new request_js_1.ICRequestObj();

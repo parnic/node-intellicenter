@@ -1,6 +1,6 @@
 import minimist from "minimist";
 import { FindUnits, Unit } from "./index.js";
-import { ICRequest, ICRequestObj } from "./messages/request.js";
+import { GetRequest, ICRequestObj } from "./messages/request.js";
 
 const argv = minimist(process.argv.slice(2));
 
@@ -49,7 +49,7 @@ const example = async () => {
   await unit.connect();
   console.log("...connected.");
 
-  const customRequest = new ICRequest();
+  const customRequest = GetRequest();
   customRequest.command = "GetParamList";
   customRequest.condition = "";
   const reqObj = new ICRequestObj();
