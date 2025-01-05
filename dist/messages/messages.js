@@ -1,5 +1,6 @@
 import { GetBodyStatus } from "./body-status.js";
 import { GetChemicalStatus } from "./chem-status.js";
+import { GetCircuitStatus } from "./circuit-status.js";
 import { GetSystemConfiguration } from "./configuration.js";
 import { GetHeaters } from "./get-heater.js";
 import { SubscribeToUpdates } from "./notify.js";
@@ -11,6 +12,7 @@ import { GetSystemInformation } from "./system-info.js";
 export const messages = {
     GetBodyStatus,
     GetChemicalStatus,
+    GetCircuitStatus,
     GetHeaters,
     GetSchedule,
     GetSystemConfiguration,

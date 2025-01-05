@@ -4,7 +4,7 @@ import { FindUnits, Unit } from "./index.js";
 import { messages } from "./messages/messages.js";
 
 console.log("searching...");
-const f = new FindUnits("10.0.0.3");
+const f = new FindUnits();
 const units = await f.searchAsync(1000);
 f.close();
 console.log("Discovered units:", units);
@@ -60,6 +60,10 @@ console.log("got response:", JSON.stringify(resp, null, 2));
 
 console.log("sending Get Schedule request...");
 resp = await unit.send(messages.GetSchedule());
+console.log("got response:", JSON.stringify(resp, null, 2));
+
+console.log("sending Get Circuit Status request...");
+resp = await unit.send(messages.GetCircuitStatus());
 console.log("got response:", JSON.stringify(resp, null, 2));
 
 // console.log("sending Set Setpoint request...");

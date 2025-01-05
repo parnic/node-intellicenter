@@ -1,5 +1,6 @@
 import { GetBodyStatus } from "./body-status.js";
 import { GetChemicalStatus } from "./chem-status.js";
+import { GetCircuitStatus } from "./circuit-status.js";
 import { GetSystemConfiguration } from "./configuration.js";
 import { GetHeaters } from "./get-heater.js";
 import { SubscribeToUpdates } from "./notify.js";
@@ -11,6 +12,7 @@ import { GetSystemInformation } from "./system-info.js";
 export declare const messages: {
     GetBodyStatus: typeof GetBodyStatus;
     GetChemicalStatus: typeof GetChemicalStatus;
+    GetCircuitStatus: typeof GetCircuitStatus;
     GetHeaters: typeof GetHeaters;
     GetSchedule: typeof GetSchedule;
     GetSystemConfiguration: typeof GetSystemConfiguration;
