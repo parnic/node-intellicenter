@@ -5,7 +5,7 @@ import { GetHeaters } from "./get-heater.js";
 import { SubscribeToUpdates } from "./notify.js";
 import { GetSchedule } from "./schedule.js";
 import { SetHeatMode } from "./set-heater.js";
-import { SetItemStatus } from "./set-status.js";
+import { SetObjectStatus } from "./set-object-status.js";
 import { SetSetpoint } from "./setpoint.js";
 import { GetSystemInformation } from "./system-info.js";
 export const messages = {
@@ -16,7 +16,7 @@ export const messages = {
     GetSystemConfiguration,
     GetSystemInformation,
     SetHeatMode,
-    SetItemStatus,
+    SetObjectStatus,
     SetSetpoint,
     SubscribeToUpdates,
 };

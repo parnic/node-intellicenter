@@ -67,11 +67,11 @@ console.log("got response:", JSON.stringify(resp, null, 2));
 // console.log("got response:", JSON.stringify(resp, null, 2));
 
 // console.log("turning off pool...");
-// resp = await unit.send(messages.SetItemStatus("B1101", false));
+// resp = await unit.send(messages.SetObjectStatus("B1101", false));
 // console.log("got response:", JSON.stringify(resp, null, 2));
 
 // console.log("turning off water feature...");
-// resp = await unit.send(messages.SetItemStatus("C0003", false));
+// resp = await unit.send(messages.SetObjectStatus("C0003", false));
 // console.log("got response:", JSON.stringify(resp, null, 2));
 
 // console.log("sending Set Heatmode request...");

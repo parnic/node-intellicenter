@@ -5,7 +5,7 @@ import { GetHeaters } from "./get-heater.js";
 import { SubscribeToUpdates } from "./notify.js";
 import { GetSchedule } from "./schedule.js";
 import { SetHeatMode } from "./set-heater.js";
-import { SetItemStatus } from "./set-status.js";
+import { SetObjectStatus } from "./set-object-status.js";
 import { SetSetpoint } from "./setpoint.js";
 import { GetSystemInformation } from "./system-info.js";
 export declare const messages: {
@@ -16,7 +16,7 @@ export declare const messages: {
     GetSystemConfiguration: typeof GetSystemConfiguration;
     GetSystemInformation: typeof GetSystemInformation;
     SetHeatMode: typeof SetHeatMode;
-    SetItemStatus: typeof SetItemStatus;
+    SetObjectStatus: typeof SetObjectStatus;
     SetSetpoint: typeof SetSetpoint;
     SubscribeToUpdates: typeof SubscribeToUpdates;
 };

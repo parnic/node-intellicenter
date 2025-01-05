@@ -2,28 +2,28 @@ import { ICParam } from "./param.js";
 import { GetRequest, ICRequest, ICRequestObj } from "./request.js";
 
 /**
- * Requests to change the status of items known to this controller.
+ * Requests to change the status of objects known to this controller.
  *
- * Turns one or more items on or off. Use the `objnam` of the circuit to be set.
+ * Turns one or more objects on or off. Use the `objnam` of the circuit to be set.
  *
  * @returns the object used to issue this request
  */
-export function SetItemStatus(
-  item: string | string[],
+export function SetObjectStatus(
+  object: string | string[],
   status: boolean,
 ): ICRequest {
   const req = GetRequest();
   req.command = "SetParamList";
   req.objectList = [];
 
-  let items: string[];
-  if (Array.isArray(item)) {
-    items = item;
+  let objects: string[];
+  if (Array.isArray(object)) {
+    objects = object;
   } else {
-    items = [item];
+    objects = [object];
   }
 
-  for (const i of items) {
+  for (const i of objects) {
     const reqObj = new ICRequestObj();
     reqObj.objnam = i;
     reqObj.params = new ICParam();
