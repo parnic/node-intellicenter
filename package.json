@@ -73,7 +73,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --module commonjs --moduleResolution classic --outDir cjs/ && echo {\"type\": \"commonjs\"} > cjs/package.json && tsc --outDir esm/ && echo {\"type\": \"module\"} > esm/package.json",
+    "build": "tsc --module commonjs --moduleResolution classic --outDir cjs/ && ncp cjs-package.json cjs/package.json && tsc --outDir esm/ && ncp esm-package.json esm/package.json",
     "example": "tsc && node esm/example.js",
     "lint": "eslint . && prettier . --check && markdownlint-cli2 **/*.md",
     "lint:fix": "eslint . --fix && prettier . --write && markdownlint-cli2 --fix **/*.md",
@@ -93,6 +93,7 @@
     "eslint": "^9.17.0",
     "markdownlint-cli2": "^0.17.1",
     "minimist": "^1.2.8",
+    "ncp": "^2.0.0",
     "prettier": "3.4.2",
     "supports-color": "^10.0.0",
     "typescript": "^5.7.2",
