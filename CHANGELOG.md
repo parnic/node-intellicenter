@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.2.0] - 2025-01-05
+
+### Added
+
+- Added list-objects script to discover object names. This is useful if you need to know what objects are available to your pool controller for the purposes of making direct calls referencing them. See readme for details on how to use it.
+
+### Changed
+
+- Split the pre-built files into CommonJS and ESModule variants. The package.json is setup to choose the right one based on whether you use require() or import. This avoids the previous requirement of using dynamic imports in a CJS consumer.
+- [Breaking change] Messages no longer encapsulates its exports under the "messages" name, so users are free to import with their preferred name.
+
 ## [v0.1.0] - 2025-01-05
 
 ### Added
