@@ -33,7 +33,7 @@ const example = async () => {
         }
         endpoint = units[0].addressStr;
         port = units[0].port;
-        console.log(`found unit at ${endpoint}"${port.toString()}`);
+        console.log(`...found unit at ${endpoint}:${port.toString()}`);
     }
     if (!endpoint) {
         throw new Error("invalid controller address");
