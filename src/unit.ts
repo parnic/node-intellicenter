@@ -63,7 +63,7 @@ export class Unit extends EventEmitter {
     this.client.on("error", (evt) => {
       // todo: emit event so we can reconnect? auto reconnect?
       debugUnit("error in websocket: $o", evt);
-      this.emit("error");
+      this.emit("error", evt);
       socketCleanup();
     });
     this.client.on("open", () => {
