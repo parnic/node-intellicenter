@@ -14,6 +14,12 @@ export default tseslint.config(
     },
   },
   {
-    ignores: ["cjs/**", "esm/**", "eslint.config.mjs"],
+    ignores: [
+      "cjs/**",
+      "esm/**",
+      "tests/**",
+      "jest.config.js",
+      "eslint.config.mjs",
+    ],
   },
 );

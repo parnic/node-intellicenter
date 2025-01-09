@@ -38,6 +38,10 @@ jobs:
       id: lint
       run: npm run lint
 
+    - name: Run tests
+      id: tests
+      run: npm run test
+
     # This will fail the workflow if either of the output directories are different
     # than expected.
     - name: Compare Directories
