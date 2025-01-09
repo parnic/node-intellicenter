@@ -8,7 +8,7 @@ The [Wiki](https://github.com/parnic/node-intellicenter/wiki) has development no
 
 ## Usage
 
-See example.ts for an example of interfacing with the library. Broadly, import the library with
+See [example.ts](./src/example.ts) for an example of interfacing with the library. Broadly, import the library with
 
 ```javascript
 // ESM
@@ -88,11 +88,11 @@ console.log(JSON.stringify(response, null, 2));
 
 ## Examples
 
-See [the example script](./example.ts) (transpiled [CJS version](./cjs/example.js) | [ESM version](./esm/example.js)) for some code examples to get you going.
+See [the example script](./src/example.ts) (transpiled [CJS version](./cjs/example.js) | [ESM version](./esm/example.js)) for some code examples to get you going.
 
 ## List-objects script
 
-There is a [list-objects](./list-objects.ts) script available for easily identifying objects on your controller that you can use to get info from or set attributes on.
+There is a [list-objects](./src/list-objects.ts) script available for easily identifying objects on your controller that you can use to get info from or set attributes on.
 
 When invoked with `npm run list-objects` or `node esm/list-objects.js` it will search for units, then request and format+display the objects to the user. There are a few arguments available:
 
@@ -113,7 +113,7 @@ Contributions are welcomed! Please open a pull request with your changes and let
 
 ## API reference
 
-See the list of [messages](./messages/messages.ts) for an up-to-date central listing of all available messages. These are essentially all helper methods for well-known messages, but you can construct your own by creating a new ICRequest via either the [GetRequest()](./messages/request.ts#L19) helper method or just constructing a `new ICRequest()` and filling it out (note: if you go the raw ICRequest route, you'll want some method of handling messageID that allows you to distinguish responses from each other).
+See the list of [messages](./src/messages/messages.ts) for an up-to-date central listing of all available messages. These are essentially all helper methods for well-known messages, but you can construct your own by creating a new ICRequest via either the [GetRequest()](./src/messages/request.ts#L19) helper method or just constructing a `new ICRequest()` and filling it out (note: if you go the raw ICRequest route, you'll want some method of handling messageID that allows you to distinguish responses from each other).
 
 IntelliCenter controllers can handle lots of messages being thrown at them at once and will respond when each request has been processed. This is why the `messageID` field on a request is important. If you use this library in async/await mode you'll only be dealing with one request in flight at a time, but that's not technically necessary.
 
@@ -121,13 +121,13 @@ IntelliCenter controllers can handle lots of messages being thrown at them at on
 
 Messages (requests and responses) are sent in JSON format. Generally a request is made with a `command`, an optional `condition`, and an `objectList` with details about what properties ("keys") and objects are being referred to. Some commands, such as `GetQuery`, require additional properties to be specified.
 
-See [ICRequest](./messages/request.ts) and [ICResponse](./messages/response.ts) as well as [ICParam](./messages/param.ts) for all known fields.
+See [ICRequest](./src/messages/request.ts) and [ICResponse](./src/messages/response.ts) as well as [ICParam](./src/messages/param.ts) for all known fields.
 
 There are some redacted [connection logs](./connection-logs/) available for a raw look at some basic system communication. These were obtained by using [mitmproxy](https://mitmproxy.org/) as a websocket proxy and having the official Pentair Pool app connect to it while it was connected to the pool.
 
 ### Subscribing to updates
 
-[SubscribeToUpdates](./messages/notify.ts) may be sent to be notified about changes to the given keys on the given object for the duration of the connection. It is unknown how/if you can unsubscribe after subscribing, but reconnecting to the unit will start fresh with no subscriptions registered.
+[SubscribeToUpdates](./src/messages/notify.ts) may be sent to be notified about changes to the given keys on the given object for the duration of the connection. It is unknown how/if you can unsubscribe after subscribing, but reconnecting to the unit will start fresh with no subscriptions registered.
 
 Example:
 
