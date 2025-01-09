@@ -82,11 +82,11 @@ class Unit extends events_1.EventEmitter {
             return;
         }
         debugUnit("closing connection by request");
-        this.emit("close");
         this.client.close();
     }
     socketCleanup = () => {
         debugUnit("socket cleanup");
+        this.emit("close");
         this.client?.removeAllListeners();
         this.client = undefined;
         if (this.pingTimeout) {

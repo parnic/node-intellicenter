@@ -98,13 +98,13 @@ export class Unit extends EventEmitter {
     }
 
     debugUnit("closing connection by request");
-    this.emit("close");
     this.client.close();
   }
 
   private socketCleanup = () => {
     debugUnit("socket cleanup");
 
+    this.emit("close");
     this.client?.removeAllListeners();
     this.client = undefined;
 
