@@ -1,5 +1,4 @@
 import { EventEmitter } from "events";
-import { WebSocket } from "ws";
 import debug from "debug";
 const debugUnit = debug("ic:unit");
 /**
@@ -42,32 +41,33 @@ export class Unit extends EventEmitter {
         }
         debugUnit(`connecting to ws://${this.endpoint}:${this.port.toString()}`);
         this.client = new WebSocket(`ws://${this.endpoint}:${this.port.toString()}`);
-        const { heartbeat, onClientMessage, socketCleanup } = this;
-        this.client.on("error", (evt) => {
-            // todo: emit event so we can reconnect? auto reconnect?
-            debugUnit("error in websocket: $o", evt);
-            this.emit("error", evt);
-            socketCleanup();
-        });
-        this.client.on("open", () => {
-            this.emit("open");
-            heartbeat();
-        });
-        this.client.on("ping", heartbeat);
-        this.client.on("pong", heartbeat);
-        this.client.on("close", socketCleanup);
-        this.client.on("message", onClientMessage);
+        const { onOpen, onError, onClientMessage, socketCleanup } = this;
+        this.client.addEventListener("error", onError);
+        this.client.addEventListener("open", onOpen);
+        this.client.addEventListener("close", socketCleanup);
+        this.client.addEventListener("message", onClientMessage);
         this.pingTimer = setInterval(() => {
             debugUnit("sending ping");
-            this.client?.ping();
+            // this isn't an actual command that is recognized by the system, we just want to make sure they're still there.
+            this.client?.send(JSON.stringify({ command: "ping" }));
         }, this.pingInterval);
         await new Promise((resolve, reject) => {
-            this.client?.once("error", reject);
-            this.client?.once("open", resolve);
+            this.client?.addEventListener("error", reject, true);
+            this.client?.addEventListener("open", resolve, true);
         });
         debugUnit("connected");
         this.emit("connected");
     }
+    onOpen = () => {
+        this.emit("open");
+        this.heartbeat();
+    };
+    onError = (evt) => {
+        // todo: emit event so we can reconnect? auto reconnect?
+        debugUnit("error in websocket: $o", evt);
+        this.emit("error", evt);
+        this.socketCleanup();
+    };
     /**
      * Closes the connection to the unit.
      */
@@ -81,7 +81,10 @@ export class Unit extends EventEmitter {
     socketCleanup = () => {
         debugUnit("socket cleanup");
         this.emit("close");
-        this.client?.removeAllListeners();
+        this.client?.removeEventListener("error", this.onError);
+        this.client?.removeEventListener("open", this.onOpen);
+        this.client?.removeEventListener("close", this.socketCleanup);
+        this.client?.removeEventListener("message", this.onClientMessage);
         this.client = undefined;
         if (this.pingTimeout) {
             clearTimeout(this.pingTimeout);
@@ -98,13 +101,20 @@ export class Unit extends EventEmitter {
         this.pingTimeout = setTimeout(() => {
             debugUnit("terminating connection due to heartbeat timeout");
             this.emit("timeout");
-            this.client?.terminate();
+            try {
+                this.client?.close();
+            }
+            catch (ex) {
+                debugUnit("exception trying to close client from ping timeout: %o", ex);
+            }
             this.socketCleanup();
         }, this.pingInterval + 5000);
     };
-    onClientMessage = (msg) => {
+    onClientMessage = (evt) => {
+        const msg = evt.data;
         debugUnit("message received, length %d", msg.length);
-        const respObj = JSON.parse(msg.toString());
+        this.heartbeat();
+        const respObj = JSON.parse(msg);
         if (respObj.command.toLowerCase() === "notifylist") {
             debugUnit("  it's a subscription confirmation or update");
             this.emit(`notify`, respObj);

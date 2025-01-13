@@ -30,6 +30,8 @@ export declare class Unit extends EventEmitter {
      * Connects to the specified unit and maintains a connection to it until `close()` is called.
      */
     connect(): Promise<void>;
+    private onOpen;
+    private onError;
     /**
      * Closes the connection to the unit.
      */
