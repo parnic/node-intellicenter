@@ -3,6 +3,7 @@ import debug from "debug";
 
 import { ICRequest } from "./messages/request.js";
 import { ICResponse } from "./messages/response.js";
+import * as ws from "ws";
 // needed for jsdoc
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import * as messages from "./messages/messages.js";
@@ -29,7 +30,7 @@ const debugUnit = debug("ic:unit");
  * * `"connected"` - fired when a connection has completed successfully
  */
 export class Unit extends EventEmitter {
-  private client?: WebSocket;
+  private client?: ws.WebSocket;
   private pingTimeout?: ReturnType<typeof setTimeout>;
   private pingTimer?: ReturnType<typeof setInterval>;
   private pingInterval = 60000;
@@ -54,15 +55,15 @@ export class Unit extends EventEmitter {
 
     debugUnit(`connecting to ws://${this.endpoint}:${this.port.toString()}`);
 
-    this.client = new WebSocket(
+    this.client = new ws.WebSocket(
       `ws://${this.endpoint}:${this.port.toString()}`,
     );
 
     const { onOpen, onError, onClientMessage, socketCleanup } = this;
-    this.client.addEventListener("error", onError);
-    this.client.addEventListener("open", onOpen);
-    this.client.addEventListener("close", socketCleanup);
-    this.client.addEventListener("message", onClientMessage);
+    this.client.on("error", onError);
+    this.client.on("open", onOpen);
+    this.client.on("close", socketCleanup);
+    this.client.on("message", onClientMessage);
 
     this.pingTimer = setInterval(() => {
       debugUnit("sending ping");
@@ -71,8 +72,8 @@ export class Unit extends EventEmitter {
     }, this.pingInterval);
 
     await new Promise((resolve, reject) => {
-      this.client?.addEventListener("error", reject, true);
-      this.client?.addEventListener("open", resolve, true);
+      this.client?.once("error", reject);
+      this.client?.once("open", resolve);
     });
 
     debugUnit("connected");
@@ -84,7 +85,7 @@ export class Unit extends EventEmitter {
     this.heartbeat();
   };
 
-  private onError = (evt: Event) => {
+  private onError = (evt: ws.ErrorEvent) => {
     // todo: emit event so we can reconnect? auto reconnect?
     debugUnit("error in websocket: $o", evt);
     this.emit("error", evt);
@@ -107,10 +108,7 @@ export class Unit extends EventEmitter {
     debugUnit("socket cleanup");
 
     this.emit("close");
-    this.client?.removeEventListener("error", this.onError);
-    this.client?.removeEventListener("open", this.onOpen);
-    this.client?.removeEventListener("close", this.socketCleanup);
-    this.client?.removeEventListener("message", this.onClientMessage);
+    this.client?.removeAllListeners();
     this.client = undefined;
 
     if (this.pingTimeout) {
@@ -140,12 +138,11 @@ export class Unit extends EventEmitter {
     }, this.pingInterval + 5000);
   };
 
-  private onClientMessage = (evt: MessageEvent) => {
-    const msg = evt.data as string;
+  private onClientMessage = (msg: Buffer) => {
     debugUnit("message received, length %d", msg.length);
     this.heartbeat();
 
-    const respObj = JSON.parse(msg) as ICResponse;
+    const respObj = JSON.parse(msg.toString()) as ICResponse;
     if (respObj.command.toLowerCase() === "notifylist") {
       debugUnit("  it's a subscription confirmation or update");
       this.emit(`notify`, respObj);

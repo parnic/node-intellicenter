@@ -1,4 +1,37 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || (function () {
+    var ownKeys = function(o) {
+        ownKeys = Object.getOwnPropertyNames || function (o) {
+            var ar = [];
+            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
+            return ar;
+        };
+        return ownKeys(o);
+    };
+    return function (mod) {
+        if (mod && mod.__esModule) return mod;
+        var result = {};
+        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
+        __setModuleDefault(result, mod);
+        return result;
+    };
+})();
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -6,6 +39,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Unit = void 0;
 const events_1 = require("events");
 const debug_1 = __importDefault(require("debug"));
+const ws = __importStar(require("ws"));
 const debugUnit = (0, debug_1.default)("ic:unit");
 /**
  * Contains methods to connect to and communicate with an IntelliCenter controller.
@@ -46,20 +80,20 @@ class Unit extends events_1.EventEmitter {
             throw new Error("can't open a client that is already open");
         }
         debugUnit(`connecting to ws://${this.endpoint}:${this.port.toString()}`);
-        this.client = new WebSocket(`ws://${this.endpoint}:${this.port.toString()}`);
+        this.client = new ws.WebSocket(`ws://${this.endpoint}:${this.port.toString()}`);
         const { onOpen, onError, onClientMessage, socketCleanup } = this;
-        this.client.addEventListener("error", onError);
-        this.client.addEventListener("open", onOpen);
-        this.client.addEventListener("close", socketCleanup);
-        this.client.addEventListener("message", onClientMessage);
+        this.client.on("error", onError);
+        this.client.on("open", onOpen);
+        this.client.on("close", socketCleanup);
+        this.client.on("message", onClientMessage);
         this.pingTimer = setInterval(() => {
             debugUnit("sending ping");
             // this isn't an actual command that is recognized by the system, we just want to make sure they're still there.
             this.client?.send(JSON.stringify({ command: "ping" }));
         }, this.pingInterval);
         await new Promise((resolve, reject) => {
-            this.client?.addEventListener("error", reject, true);
-            this.client?.addEventListener("open", resolve, true);
+            this.client?.once("error", reject);
+            this.client?.once("open", resolve);
         });
         debugUnit("connected");
         this.emit("connected");
@@ -87,10 +121,7 @@ class Unit extends events_1.EventEmitter {
     socketCleanup = () => {
         debugUnit("socket cleanup");
         this.emit("close");
-        this.client?.removeEventListener("error", this.onError);
-        this.client?.removeEventListener("open", this.onOpen);
-        this.client?.removeEventListener("close", this.socketCleanup);
-        this.client?.removeEventListener("message", this.onClientMessage);
+        this.client?.removeAllListeners();
         this.client = undefined;
         if (this.pingTimeout) {
             clearTimeout(this.pingTimeout);
@@ -116,11 +147,10 @@ class Unit extends events_1.EventEmitter {
             this.socketCleanup();
         }, this.pingInterval + 5000);
     };
-    onClientMessage = (evt) => {
-        const msg = evt.data;
+    onClientMessage = (msg) => {
         debugUnit("message received, length %d", msg.length);
         this.heartbeat();
-        const respObj = JSON.parse(msg);
+        const respObj = JSON.parse(msg.toString());
         if (respObj.command.toLowerCase() === "notifylist") {
             debugUnit("  it's a subscription confirmation or update");
             this.emit(`notify`, respObj);
