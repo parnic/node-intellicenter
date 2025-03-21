@@ -86,7 +86,7 @@ export class Unit extends EventEmitter {
   };
 
   private onError = (evt: ws.ErrorEvent) => {
-    // todo: emit event so we can reconnect? auto reconnect?
+    // todo: auto reconnect?
     debugUnit("error in websocket: $o", evt);
     this.emit("error", evt);
     this.socketCleanup();

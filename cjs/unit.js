@@ -103,7 +103,7 @@ class Unit extends events_1.EventEmitter {
         this.heartbeat();
     };
     onError = (evt) => {
-        // todo: emit event so we can reconnect? auto reconnect?
+        // todo: auto reconnect?
         debugUnit("error in websocket: $o", evt);
         this.emit("error", evt);
         this.socketCleanup();
