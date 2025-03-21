@@ -1,10 +1,22 @@
 import { ICRequest } from "./request.js";
+export declare enum HeaterType {
+    NoChange = 0,
+    Off = 1,
+    Heater = 2,
+    SolarOnly = 3,
+    SolarPreferred = 4,
+    UltraTemp = 5,
+    UltraTempPreferred = 6,
+    HybridGas = 7,
+    HybridUltraTemp = 8,
+    HybridHybrid = 9,
+    HybridDual = 10,
+    MasterTemp = 11,
+    MaxETherm = 12,
+    ETI250 = 13
+}
 /**
  * Requests to turn a body's heater on or off.
- *
- * This is very WIP. For my pool and my heater configuration, the MODE needs to be 11 to enable my
- * heater and 1 to disable all heaters. I have a feeling 11 is unique to my system's configuration,
- * but I can't yet determine how to know what 11 maps to in order to make this more generic.
  *
  * Note that this doesn't necessarily start heating the body by itself - if the body's pump is
  * currently off, enabling the heater will not turn it on. If the pump/body is on, then this will
@@ -12,4 +24,4 @@ import { ICRequest } from "./request.js";
  *
  * @returns the object used to issue this request
  */
-export declare function SetHeatMode(bodyObjnam: string, enabled: boolean): ICRequest;
+export declare function SetHeatMode(bodyObjnam: string, heaterType: HeaterType): ICRequest;

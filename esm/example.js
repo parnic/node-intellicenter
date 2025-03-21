@@ -1,6 +1,7 @@
 "use strict";
 import { FindUnits, Unit } from "./index.js";
 import * as messages from "./messages/messages.js";
+// import { HeaterType } from "./messages/set-heater.js";
 const example = async () => {
     console.log("searching...");
     const f = new FindUnits();
@@ -58,7 +59,7 @@ const example = async () => {
     // resp = await unit.send(messages.SetObjectStatus("C0003", false));
     // console.log("got response:", JSON.stringify(resp, null, 2));
     // console.log("sending Set Heatmode request...");
-    // resp = await unit.send(messages.SetHeatMode("B1202", true));
+    // resp = await unit.send(messages.SetHeatMode("B1202", HeaterType.MasterTemp));
     // console.log("got response:", JSON.stringify(resp, null, 2));
     unit.close();
 };

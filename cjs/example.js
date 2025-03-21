@@ -35,6 +35,7 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 const index_js_1 = require("./index.js");
 const messages = __importStar(require("./messages/messages.js"));
+// import { HeaterType } from "./messages/set-heater.js";
 const example = async () => {
     console.log("searching...");
     const f = new index_js_1.FindUnits();
@@ -92,7 +93,7 @@ const example = async () => {
     // resp = await unit.send(messages.SetObjectStatus("C0003", false));
     // console.log("got response:", JSON.stringify(resp, null, 2));
     // console.log("sending Set Heatmode request...");
-    // resp = await unit.send(messages.SetHeatMode("B1202", true));
+    // resp = await unit.send(messages.SetHeatMode("B1202", HeaterType.MasterTemp));
     // console.log("got response:", JSON.stringify(resp, null, 2));
     unit.close();
 };
