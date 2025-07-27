@@ -62,10 +62,10 @@ export class FindUnits extends EventEmitter {
         this.finder
             .on("listening", () => {
             if (this.broadcastInterface) {
-                this.finder.setMulticastInterface(this.broadcastInterface);
+                this.finder?.setMulticastInterface(this.broadcastInterface);
             }
-            this.finder.setBroadcast(true);
-            this.finder.setMulticastTTL(128);
+            this.finder?.setBroadcast(true);
+            this.finder?.setMulticastTTL(128);
             if (!this.bound) {
                 this.bound = true;
                 this.sendServerBroadcast();
@@ -92,6 +92,10 @@ export class FindUnits extends EventEmitter {
      * Subscribe to the `"serverFound"` event to receive connected unit information.
      */
     search() {
+        if (!this.finder) {
+            debugFind("Cannot search with a closed finder.");
+            return;
+        }
         if (!this.bound) {
             this.finder.bind();
         }
@@ -179,14 +183,18 @@ export class FindUnits extends EventEmitter {
         }
     }
     sendServerBroadcast() {
+        if (!this.finder) {
+            debugFind("Cannot send server broadcast with a closed finder.");
+            return;
+        }
         this.finder.send(this.message, 0, this.message.length, 5353, "224.0.0.251");
         debugFind("Looking for IntelliCenter hosts...");
     }
     /**
-     * Closes the finder socket.
+     * Closes the finder socket. Finder is no longer usable after this.
      */
     close() {
-        this.finder.close();
+        this.finder?.close();
     }
 }
 //# sourceMappingURL=finder.js.map

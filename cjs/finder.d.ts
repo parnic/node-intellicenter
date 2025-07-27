@@ -27,7 +27,7 @@ export declare class FindUnits extends EventEmitter {
      * @param broadcastInterface the address of the interface to send the broadcast to. If not specified, will use system selection. Only necessary if you have more than one network adapter/interface and want to search on a specific one.
      */
     constructor(broadcastInterface?: string | undefined);
-    private finder;
+    private finder?;
     private bound;
     private message;
     private units;
@@ -46,7 +46,7 @@ export declare class FindUnits extends EventEmitter {
     private foundServer;
     private sendServerBroadcast;
     /**
-     * Closes the finder socket.
+     * Closes the finder socket. Finder is no longer usable after this.
      */
     close(): void;
 }
