@@ -81,7 +81,7 @@
   },
   "dependencies": {
     "debug": "^4.4.0",
-    "uuid": "^11.0.3",
+    "uuid": "^14.0.0",
     "ws": "^8.18.0"
   },
   "devDependencies": {
