@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 import { ICParam } from "./param.js";
 
 export class ICRequestObj {
@@ -18,6 +17,6 @@ export class ICRequest {
 
 export function GetRequest(): ICRequest {
   const req = new ICRequest();
-  req.messageID = uuidv4();
+  req.messageID = crypto.randomUUID();
   return req;
 }

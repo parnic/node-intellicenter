@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
 export class ICRequestObj {
     objnam = "";
     keys = [];
@@ -14,7 +13,7 @@ export class ICRequest {
 }
 export function GetRequest() {
     const req = new ICRequest();
-    req.messageID = uuidv4();
+    req.messageID = crypto.randomUUID();
     return req;
 }
 //# sourceMappingURL=request.js.map

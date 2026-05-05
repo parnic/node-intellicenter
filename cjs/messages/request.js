@@ -2,7 +2,6 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ICRequest = exports.ICRequestObj = void 0;
 exports.GetRequest = GetRequest;
-const uuid_1 = require("uuid");
 class ICRequestObj {
     objnam = "";
     keys = [];
@@ -20,7 +19,7 @@ class ICRequest {
 exports.ICRequest = ICRequest;
 function GetRequest() {
     const req = new ICRequest();
-    req.messageID = (0, uuid_1.v4)();
+    req.messageID = crypto.randomUUID();
     return req;
 }
 //# sourceMappingURL=request.js.map
